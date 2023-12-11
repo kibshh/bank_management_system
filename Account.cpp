@@ -15,9 +15,9 @@ Account::Account(std::string account_holder, double balance)
         if(i == 7 || i == 17)
             account_number += '-';
     }
+    std::uniform_int_distribution<int> distribution2(100, 999);
+    pin = distribution2(gen);
 }
-
-Account::~Account(){}
 
 bool Account::deposit(double amount)
 {
@@ -45,23 +45,55 @@ bool Account::withdraw(double amount)
     }
 }
 
+void Account::money_transaction(std::string description, double amount)
+{
+    Transaction tr(description, amount);
+    if(amount < 0)
+    {
+        if(withdraw(-(amount)))
+        {
+            std::cout<<"\nTransaction completed\n"<<std::endl;
+            transactions.push_back(tr);
+        }
+        else
+            std::cout<<"\nTransaction denied\n"<<std::endl;
+    }
+    else
+    {
+        if(deposit(amount))
+        {
+            std::cout<<"\nTransaction completed\n"<<std::endl;
+            transactions.push_back(tr);
+        }
+        else
+            std::cout<<"\nTransaction denied\n"<<std::endl; 
+    }
+}
+
 void Account::display()
 {
-    std::cout<<std::setw(45)<<std::setfill('-')<<"-"<<std::setfill(' ')<<std::endl;
+    std::cout << std::setiosflags(std::ios::fixed) << std::setprecision(2);
+    std::cout<<std::setw(55)<<std::setfill('-')<<"-"<<std::setfill(' ')<<std::endl;
     std::cout<<std::setw(10)<<" "<<"Account Information"<<std::endl;
-    std::cout<<std::setw(45)<<std::setfill('-')<<"-"<<std::setfill(' ')<<std::endl;
-    std::cout<<std::setw(20)<<std::left<<"Account Type:"<<account_type<<std::endl;
+    std::cout<<std::setw(55)<<std::setfill('-')<<"-"<<std::setfill(' ')<<std::endl;
+    std::cout<<std::setw(20)<<std::left<<"Account Type:"<<get_account_type()<<std::endl;
     std::cout<<std::setw(20)<<std::left<<"Account Number:"<<account_number<<std::endl;
     std::cout<<std::setw(20)<<std::left<<"Account Holder:"<<account_holder<<std::endl;
     std::cout<<std::setw(20)<<std::left<<"Balance:"<<"$"<<balance<<std::endl;
-    std::cout<<std::setw(20)<<std::left<<"Available:"<<std::endl;
-    std::cout<<std::setw(20)<<std::left<<"Interest Rate:"<<std::endl;
-    std::cout<<std::setw(45)<<std::setfill('-')<<"-"<<std::setfill(' ')<<std::endl;
+    std::cout<<std::setw(20)<<std::left<<"Interest Rate:"<<get_interest()<<std::endl;
+    std::cout<<std::setw(55)<<std::setfill('-')<<"-"<<std::setfill(' ')<<std::endl;
     std::cout<<std::setw(20)<<std::left<<"Recent Transactions:"<<std::endl;
-    std::cout<<std::setw(45)<<std::setfill('-')<<"-"<<std::setfill(' ')<<std::endl;
-    std::cout<<std::setw(11)<<std::left<<"Date"<<std::setw(23)<<std::left
+    std::cout<<std::setw(55)<<std::setfill('-')<<"-"<<std::setfill(' ')<<std::endl;
+    std::cout<<std::setw(15)<<std::left<<"Date"<<std::setw(29)<<std::left
     <<"Description"<<std::setw(11)<<std::left<<"Amount"<<std::endl;
-    std::cout<<std::setw(45)<<std::setfill('-')<<"-"<<std::setfill(' ')<<std::endl;
-
+    std::cout<<std::setw(55)<<std::setfill('-')<<"-"<<std::setfill(' ')<<std::endl;
+    
+    for(auto tr: transactions)
+    {
+        std::cout<<std::setw(15)<<std::left<<tr.get_date()<<std::setw(29)<<std::left
+        <<tr.get_description()<<std::setw(1)<<std::left<<"$"<<std::setw(10)<<std::left<<tr.get_amount()<<std::endl;
+    }
+    
+    std::cout<<std::setw(55)<<std::setfill('-')<<"-"<<std::setfill(' ')<<std::endl<<std::endl;
 }
 
